@@ -154,6 +154,3 @@ scripts:
     DocName|Diso_Spans|CUI|Neg_value|Neg_span|Subj_value|Subj_span|Uncertain_value|Uncertain_span|Course_value|Course_span|Severity_value|Severity_span|Cond_value|Cond_span|Generic_value|Generic_span|Bodyloc_value|Bodyloc_span|
  
  As shown above there is a single pipe field delimiter with an extra pipe after the last field.
-		
-		
-  
