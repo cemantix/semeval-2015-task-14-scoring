@@ -1,5 +1,6 @@
-#############################################################################
-#
+SemEval-2015 Task 14 evaluation metrics
+=======================================
+
 # These are scripts for the SemEval 2015 evaluation metrics.
 # Authors: Noemie  Elhadad, Sharon R. L Gorman 
 #          Columbia University
