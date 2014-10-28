@@ -1,19 +1,16 @@
 SemEval-2015 Task 14 evaluation metrics
 =======================================
-# Authors: Noemie  Elhadad, Sharon R. L Gorman 
-#          Columbia University
-#
-#      10/2014
-#
-##############################################################################
+#### Authors: Noemie  Elhadad, Sharon R. L Gorman 
+#### Columbia University
+#### 10/2014
 
-# task1_eval.pl
+## task1_eval.pl
 
 Script evaluating F-score for Disorder Identification Task. A single
 execution of the script calculates two scores; 1) strict F-score and
 2) relaxed F-score.
   
-## Input Parameters:
+### Input Parameters:
   -input (prediction directory)
   -gold (gold standard directory)
   -n (specify name of team)
@@ -21,7 +18,7 @@ execution of the script calculates two scores; 1) strict F-score and
   -trace (optional: 1 turns trace on; 0 or omit option 
                       to turn trace off )
     
-## Output 
+### Output 
   File reporting evaluation metrics for run
     
   Format of output file name: 
@@ -35,7 +32,7 @@ execution of the script calculates two scores; 1) strict F-score and
       
       
 
-## Example usages:
+### Example usages:
 
   to specify run 1:
     ./task1_eval.pl  -n team -r 1  -input team_dir -gold gold_dir
@@ -52,12 +49,12 @@ execution of the script calculates two scores; 1) strict F-score and
 
   
   
-# task2_eval.pl
+## task2_eval.pl
   Script to evaluate the slot filling task for the two sub tasks. 
   Computed metrics are per-slot overall accuracy, overall weighted 
   accuracy, and overall unweighted accuracy. 
   
-## Input parameters
+### Input parameters
   -input (prediction directory)
   -gold (gold standard directory)
   -n (specify name of team)
@@ -66,7 +63,7 @@ execution of the script calculates two scores; 1) strict F-score and
   -trace (optional: 1 turns trace on; 0 or omit 
             option to turn trace off)
     
-## Output
+### Output
   file reporting evaluation metrics for run and task.
   Output includes, F*Accuracy,  F*Wt_Accuracy and 
   slot Weighted Accuracy.
@@ -83,7 +80,7 @@ execution of the script calculates two scores; 1) strict F-score and
   same name as output file  with .trace file extension.
   example: team_task2A_run1.trace
       
-## Example usage:
+### Example usage:
 
 to specify run 1 task A:
   ./task2_eval.pl -n team -r 1 -t A  -input team_dir -gold gold_dir
