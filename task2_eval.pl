@@ -2,12 +2,11 @@
 
 ############################################################
 #
-# Script to evaluate the slot filling task for the two SemEval 
-# 2015 sub tasks. Computed metrics are per-slot overall accuracy, 
-# overall weighted accuracy, and overall unweighted accuracy. 
+# Script to evaluate the slot filling task for the two SemEval
+# 2015 sub tasks. Computed metrics are per-slot overall accuracy,
+# overall weighted accuracy, and overall unweighted accuracy.
 #
 ##############################################################
-
 
 # Parameters:
 # -input (prediction directory)
@@ -17,9 +16,8 @@
 # -t (specify A or B)
 # -trace (optional trace 1 (on) or 0 (off) )
 
-
 # Output file: $name_task$task_run$run.out
-# Example: 	n_task2A_run1.out 
+# Example: 	n_task2A_run1.out
 #			n_task2B_run1.out
 
 # Example usage:
@@ -38,27 +36,28 @@ my $run   = "";
 my $input = "";
 my $gold  = "";
 my $trace = 0;
-my $task = "";
+my $task  = "";
 my $error =
-"# Parameters:\n# -input (prediction file)\n# -gold (goldstandard file)\n# -n (specify name of run)\n# -r (specify 1 or 2 for which run)\n# -t (specifiy A, B)\n# -trace (optional: 1 turns trace on, 0 trace off - by default trace is off)\n";
+"# Parameters:\n# -input (directory with prediction files)\n# -gold (directory with goldstandard files)\n# -n (specify name of run)\n# -r (specify 1 or 2 for which run)\n# -t (specifiy A, B)\n# -trace (optional: 1 turns trace on, 0 trace off - by default trace is off)\n";
 
 GetOptions(
-    'trace:i' => \$trace,
+	'trace:i' => \$trace,
 	'n=s'     => \$name,
 	'r=n'     => \$run,
-	't=s'	  => \$task,
+	't=s'     => \$task,
 	'input=s' => \$input,
-	'gold=s'  => \$gold	
+	'gold=s'  => \$gold
 ) || die "$error";
 
 if ( ( $name eq "" ) || ( $input eq "" ) || ( $gold eq "" ) ) {
 	die "$error";
 }
-if ( ( $run != 1 ) && ( $run != 2 ) && ( $run != 3 )) {
+if ( ( $run != 1 ) && ( $run != 2 ) && ( $run != 3 ) ) {
 	die "Incorrect run id\n";
 }
-if (($task ne "A")&&($task ne "B")) {
-    die "Incorrect task id\n";}
+if ( ( $task ne "A" ) && ( $task ne "B" ) ) {
+	die "Incorrect task id\n";
+}
 
 if ($trace) {
 	my $tracefile = $name . "_" . "task2$task" . "_run" . "$run.trace";
@@ -77,37 +76,37 @@ my %canonical_slots = (
 		"yes" => .79
 	},
 	Subject => {
-		"patient"       => .01,
-		"family_member" => .99,
-		"other"         => 1,
-		"doner_other"   => 1
+		"patient"       => .05,
+		"family_member" => .95,
+		"other"         => .95,
+		"doner_other"   => .95
 	},
 	Uncertainty => {
 		"no"  => .07,
 		"yes" => .93
 	},
 	Course => {
-		"unmarked"  => .04,
-		"increased" => .99,
-		"improved"  => .99,
-		"worsened"  => .99,
-		"resolved"  => .99,
-		"decreased" => 1,
-		"changed"   => 1
+		"unmarked"  => .05,
+		"increased" => .95,
+		"improved"  => .95,
+		"worsened"  => .95,
+		"resolved"  => .95,
+		"decreased" => .95,
+		"changed"   => .95
 	},
 	Severity => {
 		"unmarked" => .08,
-		"moderate" => .96,
-		"severe"   => .97,
-		"slight"   => .99
+		"moderate" => .95,
+		"severe"   => .95,
+		"slight"   => .95
 	},
 	Conditional => {
 		"false" => .06,
 		"true"  => .94
 	},
 	Generic => {
-		"false" => .01,
-		"true"  => .99
+		"false" => .05,
+		"true"  => .95
 	},
 	BodyLoc => {
 		"null"    => .51,
@@ -146,7 +145,6 @@ load_disorders( $input, \%pred_disorders );
 my %pred_marked;
 my %gs_marked;
 
-
 # get names of documents from gold standard
 my @documents = keys %gs_disorders;
 print "Processing slot filling task for $input...";
@@ -156,10 +154,10 @@ print "Processing slot filling task for $input...";
 foreach my $document (@documents) {
 	foreach my $gs_disorder ( keys %{ $gs_disorders{$document} } ) {
 		if ( exists $pred_disorders{$document} ) {
-			
+
 			my $pred_disorder = $gs_disorder;
 			next if ( $pred_marked{$pred_disorder} );
-			
+
 			# first test for exatct id match
 			if ( exists $pred_disorders{$document}{$pred_disorder} ) {
 				$pred_marked{$gs_disorder}  = 1;
@@ -170,11 +168,12 @@ foreach my $document (@documents) {
 		}
 	}
 }
+
 # Next look for inexact matches by looking for span overlaps
 foreach my $document (@documents) {
 	foreach my $gs_disorder ( keys %{ $gs_disorders{$document} } ) {
 		my %overlap_disorders;
-		if ( exists $pred_disorders{$document} ) {	
+		if ( exists $pred_disorders{$document} ) {
 
 			foreach my $pred_disorder ( keys %{ $pred_disorders{$document} } ) {
 
@@ -250,8 +249,8 @@ my $wt_accuracy   = 0;
 my $F_ACCURACY    = 0;
 my $F_WT_ACCURACY = 0;
 
- # hash to save wts for each attribute slot - used in calc weight accuracy per slot 
-my %pred_per_slot;   
+# hash to save wts for each attribute slot - used in calc weight accuracy per slot
+my %pred_per_slot;
 
 # Calculate Unweighted accuracy
 # sum over slots divided by nb of slots
@@ -262,8 +261,6 @@ foreach my $gs_disorder ( keys %TP_disorders ) {
 }
 $accuracy = $accuracy / ( keys %TP_disorders ) if ( keys %TP_disorders > 0 );
 $F_ACCURACY = $F * $accuracy;
-
-
 
 # Initalize slots to hold wt accuracy
 foreach my $slot ( keys %canonical_slots ) {
@@ -277,12 +274,12 @@ print TRACEOUT "weighted accuracy\n" if ($trace);
 # sum over slots divided by sum of wt for each gs slot
 foreach my $gs_disorder ( keys %TP_disorders ) {
 	my $pred_disorder = $TP_disorders{$gs_disorder};
-	
-	print TRACEOUT "\nTP: $gs_disorder:" if ($trace);	
-	
+
+	print TRACEOUT "\nTP: $gs_disorder:" if ($trace);
+
 	my $per_disorder_acc =
 	  per_disorder_wt_acc( $gs_disorder, $pred_disorder, \%pred_per_slot );
-	$wt_accuracy += $per_disorder_acc;	
+	$wt_accuracy += $per_disorder_acc;
 }
 
 $wt_accuracy = $wt_accuracy / ( keys %TP_disorders )
@@ -295,12 +292,12 @@ $F_WT_ACCURACY = $F * $wt_accuracy;
 # print accuracy, F*accuracy, wt_accuracy, F*wt_accuracy
 ########################################################
 print OUT "TP: $TP_nb FP: $FP_nb FN: $FN_nb\n";
-printf OUT ( "P:\t %0.3f \n",              $P );
-printf OUT ( "R:\t %0.3f \n",              $R );
-printf OUT ( "F:\t %0.3f\n\n",             $F );
-printf OUT ( "Accuracy:\t %0.3f \t",       $accuracy );
-printf OUT ( "F*Accuracy:\t %0.3f \n",     $F_ACCURACY );
-printf OUT ( "Wt_Accuracy:\t %0.3f \t",    $wt_accuracy );
+printf OUT ( "P:\t %0.3f \n",            $P );
+printf OUT ( "R:\t %0.3f \n",            $R );
+printf OUT ( "F:\t %0.3f\n\n",           $F );
+printf OUT ( "Accuracy:\t %0.3f \t",     $accuracy );
+printf OUT ( "F*Accuracy:\t %0.3f \n",   $F_ACCURACY );
+printf OUT ( "Wt_Accuracy:\t %0.3f \t",  $wt_accuracy );
 printf OUT ( "F*Wt_Accuracy:\t %0.3f\n", $F_WT_ACCURACY );
 
 print OUT "\nSlot Weighted Accuracy:\n";
@@ -310,27 +307,29 @@ print TRACEOUT "\nSlot Weighted Accuracy:\n" if ($trace);
 foreach my $slot ( keys %canonical_slots ) {
 	my $slot_wt_acc =
 	  $pred_per_slot{$slot}{'wt_accuracy'} / $pred_per_slot{$slot}{'norm'};
-	printf OUT ( "%-11s\t%0.3f \n", $slot.":", $slot_wt_acc );
-	
+	printf OUT ( "%-11s\t%0.3f \n", $slot . ":", $slot_wt_acc );
+
 	# trace output
 	if ($trace) {
-		print TRACEOUT "$slot: $pred_per_slot{$slot}{'wt_accuracy'}/$pred_per_slot{$slot}{'norm'} =  $slot_wt_acc\n" ;
-	}	
-	
+		print TRACEOUT
+"$slot: $pred_per_slot{$slot}{'wt_accuracy'}/$pred_per_slot{$slot}{'norm'} =  $slot_wt_acc\n";
+	}
+
 }
 
 if ($trace) {
+
 	# print totrace file
 	print TRACEOUT "\nFP Predictions:\n";
 	foreach my $id ( keys %FP_disorders ) {
 		print TRACEOUT "FP: $id\n";
 	}
-		
+
 	print TRACEOUT "\nTP Predictions:\n";
 	foreach my $id ( keys %TP_disorders ) {
 		print TRACEOUT "TP: gold: $id   pred: $TP_disorders{$id}\n";
 	}
-	
+
 	print TRACEOUT "\nFN:\n";
 	foreach my $id ( keys %FN_disorders ) {
 		print TRACEOUT "FN: $id \n";
@@ -348,7 +347,7 @@ print "Finished. Result in $outputfile\n";
 #######################################################
 sub load_disorders {
 	my ( $dir, $disorders ) = @_;
-	opendir( DIR, $dir ) || die("$dir\n");
+	opendir( DIR, $dir ) || die("Error can not open directory $dir\n");
 	my @files = grep /\.pipe.*$/, readdir DIR;
 	closedir DIR;
 	foreach my $file (@files) {
@@ -364,7 +363,6 @@ sub load_disorders {
 			# Cond_value|Cond_span|Generic_value|Generic_span|
 			# Bodyloc_value|Bodyloc_span");
 			chomp;
-			
 
 			my (
 				$DocName,       $Diso_Spans,      $CUI,
@@ -382,7 +380,7 @@ sub load_disorders {
 
 			my $disorder_id = $DocName . '^' . $Diso_Spans;
 
-		 # load slots. First, we organize by document name, then by disorder_id.
+			# load slots. First, we organize by document name, then by disorder_id.
 			$disorders->{$DocName}{$disorder_id}{Diso_Spans} = $Diso_Spans;
 			$disorders->{$DocName}{$disorder_id}{CUI}        = $CUI;
 			$disorders->{$DocName}{$disorder_id}{Negation}   = $Neg_value;
@@ -393,7 +391,9 @@ sub load_disorders {
 			$disorders->{$DocName}{$disorder_id}{Severity}    = $Severity_value;
 			$disorders->{$DocName}{$disorder_id}{Conditional} = $Cond_value;
 			$disorders->{$DocName}{$disorder_id}{Generic}     = $Generic_value;
-			$disorders->{$DocName}{$disorder_id}{BodyLoc}     = $Bodyloc_value;
+			# can have multiply loactions for BodyLoc
+			$disorders->{$DocName}{$disorder_id}{BodyLoc}{$Bodyloc_value} = 1;
+
 		}
 		close IN;
 	}
@@ -406,7 +406,7 @@ sub load_disorders {
 ##################################################################
 sub per_disorder_wt_acc {
 	my ( $gs_disorder_id, $pred_disorder_id, $pred_per_slot ) = @_;
-	
+
 	my ( $document,      $gs_span )   = split( /\^/, $gs_disorder_id );
 	my ( $pred_document, $pred_span ) = split( /\^/, $pred_disorder_id );
 
@@ -414,10 +414,11 @@ sub per_disorder_wt_acc {
 	die
 "document name for predicted disorder does not match gold standard's document name!\n"
 	  if ( $document ne $pred_document );
-	  
+
 	print TRACEOUT "\n" if ($trace);
+
 	# variables for trace
-	
+
 	my $gs_disorder   = $gs_disorders{$document}{$gs_disorder_id};
 	my $pred_disorder = $pred_disorders{$document}{$pred_disorder_id};
 
@@ -425,54 +426,138 @@ sub per_disorder_wt_acc {
 
 	# Go through the canonical slots
 	foreach my $slot ( keys %canonical_slots ) {
+		my %gs_bodylocations;
 
 		# get weight for the slot value of the gs_disorder
-		my $gs_slot_value = $gs_disorder->{$slot};
-
-		# special weights for CUI and BodyLoc
-		if ( $slot eq 'CUI' ) {
-			$gs_slot_value = "ANY_CUI";
-		}
-		if ( $slot eq 'BodyLoc' ) {
-			$gs_slot_value = 'ANY_CUI' unless ( $gs_slot_value eq 'null' );
-		}
+		my $gs_slot_value = getGoldStandardSlotValue($gs_disorder, $slot);
 		my $gs_slot_wt = $canonical_slots{$slot}{$gs_slot_value};
 
 		# compute the normalization factor from the gold-standard weights
 		$norm_gs_wts += $gs_slot_wt;
 		$pred_per_slot->{$slot}{'norm'} += $gs_slot_wt;
-		
 
-		print TRACEOUT "$slot: gold_value: $gs_disorder->{$slot}\tpred_value: $pred_disorder->{$slot}  " if ($trace);
+		
+		printSlotTrace($gs_disorder,  $pred_disorder, $slot) if ($trace);
+		
 		# compare slot values between gold standard and predicted
-		if ( $pred_disorder->{$slot} eq $gs_disorder->{$slot} ) {
+		if (isSlotEqual($gs_disorder, $pred_disorder, $slot)) {
 			$acc += $gs_slot_wt;
 			$pred_per_slot->{$slot}{'wt_accuracy'} += $gs_slot_wt;
-			
-			# my debug 
-			print TRACEOUT " $gs_slot_wt\n" if ($trace);				
+
+			# my debug
+			print TRACEOUT " $gs_slot_wt\n" if ($trace);
 		}
 		else {
-			print TRACEOUT  "0\n" if ($trace);
+			print TRACEOUT "0\n" if ($trace);
 		}
-	
+
 	}
 
 	if ( $norm_gs_wts == 0 ) {
 		die "problem with gold standard weights\n";
 	}
-	
-	# my debug code 
-	
 
-	print TRACEOUT "$acc/$norm_gs_wts=" if ($trace);  
-	
+	# my debug code
+
+	print TRACEOUT "$acc/$norm_gs_wts=" if ($trace);
+
 	$acc = $acc / $norm_gs_wts;
-	
+
 	print TRACEOUT "$acc\n" if ($trace);
-	
+
 	return $acc;
 }
+
+###################################################
+# return 1 if  slot value equal for a gold standard 
+# and predicted disorder, otherwise return 0
+# inputs: $gs_disorder - ref to gold standard slot 
+#                        hash, for a disorder.                       
+#         $pred_disorder - ref to predicted slot 
+#                          hash for a disorder.
+# output: 1 if a match, 0 if not matching
+###################################################
+sub isSlotEqual {
+	my ( $gs_disorder, $pred_disorder, $slot) = @_;
+	
+	if ($slot eq 'BodyLoc') {
+		foreach my $bl (keys %{$gs_disorder->{$slot}}) {
+			if (exists($pred_disorder->{$slot}{$bl})) {
+				return 1;
+			}
+		}
+		return 0;
+	}
+	
+	return $pred_disorder->{$slot} eq $gs_disorder->{$slot};
+	
+}
+
+
+#####################################################
+# get the gold standard disorder value for the slot
+# this function takes care of normalizing values
+# for slot should when it's a CUI or a BodyLocation 
+# input: $gs_disorder - ref to gold standard slot hash 
+#                       for a disorder.  
+#        $slot - name of slot from $canonical_slots
+# output: slot value for the gold standard 
+###################################################### 
+sub getGoldStandardSlotValue {
+	my ( $gs_disorder, $slot) = @_;
+	
+	# get weight for the slot value of the gs_disorder
+	my $gs_slot_value = $gs_disorder->{$slot};
+
+	# special weights for CUI and BodyLoc
+	if ( $slot eq 'CUI' ) {
+			$gs_slot_value = "ANY_CUI";
+			
+	}
+	
+	if ($slot eq 'BodyLoc') {
+		$gs_slot_value = 'null';
+	
+		foreach my $bl (keys %{$gs_disorder->{'BodyLoc'}}) {
+			if ($bl ne 'null') {
+				$gs_slot_value = 'ANY_CUI'
+			};
+		}
+	}
+		
+	return $gs_slot_value;	
+}
+
+#######################################################
+# print trace for slot value
+# inputs: $gs_disorder - ref to gold standard slot 
+#                        hash, for a disorder.                       
+#         $pred_disorder - ref to predicted slot 
+#                          hash for a disorder.
+##################################################
+sub printSlotTrace {
+	return unless ($trace);
+	
+	my ( $gs_disorder, $pred_disorder, $slot) = @_;
+	
+	my $gs_value = "";
+	my $pred_value = "";
+	
+	if ($slot eq 'BodyLoc') {
+		my @gs_bodylocations = keys %{$gs_disorder->{'BodyLoc'}};	
+		my @pred_bodyLocations = keys %{$pred_disorder->{'BodyLoc'}};
+		$gs_value = join(",", @gs_bodylocations);
+		$pred_value = join(",", @pred_bodyLocations);
+	}
+	else {
+		$gs_value = $gs_disorder->{$slot};
+		$pred_value = $pred_disorder->{$slot};
+	}
+			
+	print TRACEOUT "$slot: gold_value: $gs_value\tpred_value: $pred_value  ";		
+		
+}
+
 
 ##################################################################
 # calculate per disorder accuracy
@@ -488,7 +573,6 @@ sub per_disorder_acc {
 	die
 "document name for predicted disorder does not match gold standard's document name!\n"
 	  if ( $document ne $pred_document );
-	
 
 	my $gs_disorder   = $gs_disorders{$document}{$gs_disorder_id};
 	my $pred_disorder = $pred_disorders{$document}{$pred_disorder_id};
@@ -503,10 +587,11 @@ sub per_disorder_acc {
 
 		# compare slot values between gold standard and predicted
 		# increment if agreement
-		if ( $pred_disorder->{$slot} eq $gs_disorder->{$slot} ) {
+		if (isSlotEqual($gs_disorder, $pred_disorder, $slot)) {
+		#if ( $pred_disorder->{$slot} eq $gs_disorder->{$slot} ) {
 			$agree++;
 		}
-		
+
 	}
 
 	return $agree / $num_slots;
