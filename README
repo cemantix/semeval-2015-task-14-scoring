@@ -1,16 +1,17 @@
 #############################################################################
 #
 # These are scripts for the SemEval 2015 evaluation metrics.
+#
 # Authors: Noemie  Elhadad, Sharon R. L Gorman 
 #          Columbia University
-#
-#      10/2014
+#          Sameer Pradhan, Guergana Savova
+#          Harvard University
 #
 ##############################################################################
 
 scripts:
 
-# task1_eval.pl
+# semeval-2015-task-14-task-1-eval.pl
 
   Script evaluating F-score for Disorder Identification Task. A single 
   execution of the script calculates two scores; 1) strict F-score  
@@ -43,21 +44,21 @@ scripts:
   * Example usages:
 
     to specify run 1:
-      ./task1_eval.pl  -n team -r 1  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-1-eval.pl  -n team -r 1  -input team_dir -gold gold_dir
     
     to specify run 2:
-      ./task1_eval.pl  -n team -r 2  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-1-eval.pl  -n team -r 2  -input team_dir -gold gold_dir
     
     to specify run 3:
-      ./task1_eval.pl  -n team -r 3  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-1-eval.pl  -n team -r 3  -input team_dir -gold gold_dir
   
     to execute run 1 with trace on:
-      ./task1_eval.pl l -n team -r 1  -input team_dir -gold gold_dir -trace 1
+      ./semeval-2015-task-14-task-1-eval.pl l -n team -r 1  -input team_dir -gold gold_dir -trace 1
   
 
   
   
-# task2_eval.pl
+# semeval-2015-task-14-task-2-eval.pl
 
   Script to evaluate the slot filling task for the two sub tasks. 
   Computed metrics are per-slot overall accuracy, overall weighted 
@@ -92,27 +93,27 @@ scripts:
   * Example usage:
 
     to specify run 1 task A:
-      ./task2_eval.pl -n team -r 1 -t A  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 1 -t A  -input team_dir -gold gold_dir
       
     to specify run 1 task B:
-      ./task2_eval.pl -n team -r 1 -t B  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 1 -t B  -input team_dir -gold gold_dir
       
     to specify run 2 task A:
-      ./task2_eval.pl -n team -r 2 -t A  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 2 -t A  -input team_dir -gold gold_dir
       
     to specify run 2 task B:
-      ./task2_eval.pl -n team -r 2 -t B  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 2 -t B  -input team_dir -gold gold_dir
     
     to specify run 3 task A:
-      ./task2_eval.pl -n team -r 3 -t A  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 3 -t A  -input team_dir -gold gold_dir
       
     to specify run 3 task B:
-      ./task2_eval.pl -n team -r 3 -t B  -input team_dir -gold gold_dir
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 3 -t B  -input team_dir -gold gold_dir
       
     
     
     to execute run 1 task A with trace on:
-      ./task2_eval.pl -n team -r 1 -t A  -input team_dir -gold gold_dir -trace 1
+      ./semeval-2015-task-14-task-2-eval.pl -n team -r 1 -t A  -input team_dir -gold gold_dir -trace 1
     
   
   
@@ -152,14 +153,14 @@ scripts:
 
    incorrect: 1027-1028,1006-1010
    
- 4) Script task1_eval.pl  expects the following input format for both 
+ 4) Script semeval-2015-task-14-task-1-eval.pl  expects the following input format for both 
     gold standard and prediction files:
     
     DocName|Diso_Spans|CUI|
   
     There is a single pipe field delimiter.
   
- 5) Script task2_eval.pl expects the following input format for both gold standard 
+ 5) Script semeval-2015-task-14-task-2-eval.pl expects the following input format for both gold standard 
     and prediction files:
     
     DocName|Diso_Spans|CUI|Neg_value|Neg_span|Subj_value|Subj_span|Uncertain_value|Uncertain_span|Course_value|Course_span|Severity_value|Severity_span|Cond_value|Cond_span|Generic_value|Generic_span|Bodyloc_value|Bodyloc_span|
@@ -167,6 +168,26 @@ scripts:
     As shown above there is a single pipe field delimiter with an extra pipe after the last field.
  
  6) Just a reminder... both parameters -input and -gold expect a directory not a single file.
-    
-    
-  
+
+
+# validate-semeval-2015-task-14.py
+
+This script is a validation script that ensures that the packaged
+system outputs meets the required directory structure and the .pipe 
+files meet the criteria for the scorer. It does the following checks:
+
+For the directory structure:
+---------------------------
+1. There are exactly 100 .pipe files in the leaf directories (which is the 
+   total number of files in the test set)
+2. The TEAM-ID matches the one specified on command-line
+3. The run IDs and versions match the required convention:
+   - There can be at most 3 runs
+   - There can be at most 99 versions per run.
+
+For the .pipe files:
+-------------------
+1. The filename inside the .pipe file is the same as the filename of the .pipe file
+2. The character-offsets have the right signature and are in increasing order
+3. The attributes have one of the legal, possible normalized values
+4. There are a total of 19 columns
