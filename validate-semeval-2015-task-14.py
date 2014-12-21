@@ -442,6 +442,12 @@ def check_offsets(offsets):
         assert from_offset < to_offset, "The character offsets should always be in increasing order [%s]" % (offsets)
 
 
+def all_null_attributes(bits):
+    for bit in bits:
+        if bit.lower() != "null":
+            return False
+    return True
+
 
 def check_pipe_contents(pipe_filename):
   pipe_file = sopen(pipe_filename)
@@ -456,19 +462,18 @@ def check_pipe_contents(pipe_filename):
     
     assert os.path.splitext(bits[0])[0] == os.path.splitext(os.path.split(pipe_filename)[-1])[0], "The filename inside the .pipe file should match the name of the pipe file"
 
+
     check_offsets(bits[1])
-    assert bits[3] in ['yes', 'no'], "Negation attribute value can only be yes or no. Found %s" % (bits[3])
-    assert bits[5] in ['patient', 'family_member', 'other', 'donor_other'], "Subject class can be patient, family_member, other, or donor_other. Found %s" % (bits[5])
-    assert bits[7] in ['no', 'yes'], "Uncertainty class can be yes or no. Found %s" % (bits[7])
-    assert bits[9] in ['unmarked', 'increased', 'improved', 'worsened', 'resolved', 'decreased', 'changed'], "Course class can be unmarked, increased, improved, worsened, resolved, decreased, or changed. Found %s" % (bits[9])
-    assert bits[11] in ['unmarked', 'moderate', 'severe', 'slight'], " can be unmarked, moderate, severe or slight. Found %s" % (bits[11])
-    assert bits[13] in ['false', 'true'], "Conditional class can be true or false. Found %s" % (bits[13])
-    assert bits[15] in ['false', 'true'], "Generic class can be true or false. Found %s" % (bits[15])
-    check_offsets(bits[-1])
-
-
-
-
+    
+    if not all_null_attributes(bits[3:]):
+        assert bits[3] in ['yes', 'no'], "Negation attribute value can only be yes or no. Found %s" % (bits[3])
+        assert bits[5] in ['patient', 'family_member', 'other', 'donor_other'], "Subject class can be patient, family_member, other, or donor_other. Found %s" % (bits[5])
+        assert bits[7] in ['no', 'yes'], "Uncertainty class can be yes or no. Found %s" % (bits[7])
+        assert bits[9] in ['unmarked', 'increased', 'improved', 'worsened', 'resolved', 'decreased', 'changed'], "Course class can be unmarked, increased, improved, worsened, resolved, decreased, or changed. Found %s" % (bits[9])
+        assert bits[11] in ['unmarked', 'moderate', 'severe', 'slight'], " can be unmarked, moderate, severe or slight. Found %s" % (bits[11])
+        assert bits[13] in ['false', 'true'], "Conditional class can be true or false. Found %s" % (bits[13])
+        assert bits[15] in ['false', 'true'], "Generic class can be true or false. Found %s" % (bits[15])
+        check_offsets(bits[-1])
 
 def check_run_dir(team_dir, run_dir):
   assert run_dir.startswith("run-")
