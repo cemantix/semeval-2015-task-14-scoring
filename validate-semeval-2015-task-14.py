@@ -480,16 +480,28 @@ def check_run_dir(team_dir, run_dir):
   assert run_dir.split("-")[1].split(".")[0] in ['0', '1', '2'], "Please provide at most three runs, 0, 1 and 2"
   assert len(run_dir.split("-")[1].split(".")[1]) == 2, "Please make sure that the run version is between 00..99"
   assert int(run_dir.split("-")[1].split(".")[1]) < 100, "Please make sure that the run version is between 00..99"
-  assert os.path.exists("%s/%s/data/test/discharge" % (team_dir, run_dir)), "Please make sure that the %s dir has the data/test/discharge under it"
-  
 
-  pipe_files = os.listdir("%s/%s/data/test/discharge/" % (team_dir, run_dir))
-  assert len(pipe_files) == 100, "There should be exactly 100 .pipe files in each run"
 
-  for pipe_file in pipe_files:
-    assert os.path.splitext(pipe_file)[1] == ".pipe", "All the files in the run directory should be .pipe files"
+  assert os.path.exists("%s/%s/data/test/discharge" % (team_dir, run_dir)) or os.path.exists("%s/%s/data/devel/discharge" % (team_dir, run_dir)), "Please make sure that the %s dir has the data/test/discharge or data/devel/discharge under it"
 
-    check_pipe_contents("%s/%s/data/test/discharge/%s" % (team_dir, run_dir, pipe_file))
+  if os.path.exists("%s/%s/data/test/discharge" % (team_dir, run_dir)):
+      pipe_files = os.listdir("%s/%s/data/test/discharge/" % (team_dir, run_dir))
+      assert len(pipe_files) == 100, "There should be exactly 100 .pipe files in each test run"
+
+      for pipe_file in pipe_files:
+        assert os.path.splitext(pipe_file)[1] == ".pipe", "All the files in the run directory should be .pipe files"
+
+        check_pipe_contents("%s/%s/data/test/discharge/%s" % (team_dir, run_dir, pipe_file))
+      
+
+  if os.path.exists("%s/%s/data/devel/discharge" % (team_dir, run_dir)):
+      pipe_files = os.listdir("%s/%s/data/devel/discharge/" % (team_dir, run_dir))
+      assert len(pipe_files) == 133, "There should be exactly 133 .pipe files in each development run"
+
+      for pipe_file in pipe_files:
+        assert os.path.splitext(pipe_file)[1] == ".pipe", "All the files in the run directory should be .pipe files"
+
+        check_pipe_contents("%s/%s/data/devel/discharge/%s" % (team_dir, run_dir, pipe_file))
 
         
 
