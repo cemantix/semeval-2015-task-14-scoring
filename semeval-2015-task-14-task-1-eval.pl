@@ -230,6 +230,7 @@ sub relaxed_f {
 				foreach my $pred_disorder ( keys %{$pred_disorders{$document}} ) {
 
 					next if ( $pred_marked{$pred_disorder} );
+					next if ( $pred_marked{$gs_disorder} ) ; 
 
 					my $overlap = determine_overlaps(
 						$gs_disorders{$document}{$gs_disorder},
